@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Navbar -->
+  <nav class="bg-blue-600 p-4">
+    <div class="flex justify-between max-w-7xl mx-auto">
+      <a href="/" class="text-white text-2xl font-bold">Product Management</a>
+      <a href="/add-product" class="text-white">Add Product</a>
+    </div>
+  </nav>
+
+  <!-- Product List -->
+  <div class="max-w-7xl mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-4">Product List</h1>
+    <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Product Cards will be injected here -->
+    </div>
+  </div>
+
+  <script>
+    // Fetch all products and display them
+    fetch('/api/products')
+      .then(response => response.json())
+      .then(products => {
+        const productList = document.getElementById('product-list');
+        products.forEach(product => {
+          const productCard = document.createElement('div');
+          productCard.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow-md');
+          productCard.innerHTML = `
+            <h2 class="text-xl font-semibold">${product.name}</h2>
+            <p>${product.description}</p>
+            <p class="text-blue-600">$${product.price}</p>
+            <a href="/edit-product/${product.id}" class="text-blue-500 mt-2 block">Edit</a>
+            <button onclick="deleteProduct(${product.id})" class="bg-red-600 text-white p-2 rounded mt-2">Delete</button>
+          `;
+          productList.appendChild(productCard);
+        });
+      });
+
+    // Delete product function
+    function deleteProduct(id) {
+      fetch(`/api/products/${id}`, { method: 'DELETE' })
+        .then(response => {
+          if (response.ok) {
+            location.reload();
+          }
+        });
+    }
+  </script>
+</body>
+</html>
